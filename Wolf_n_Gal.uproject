@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{C7FFCB90-2F4D-065B-4A28-5DB9F62542F8}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "Wolf_n_Gal",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
