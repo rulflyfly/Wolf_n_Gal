@@ -5,6 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AWolf::AWolf()
@@ -17,9 +18,17 @@ AWolf::AWolf()
     
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
     SpringArm->SetupAttachment(GetRootComponent());
+    SpringArm->TargetArmLength = 400.f;
+    SpringArm->bUsePawnControlRotation = true;
     
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-    Camera->SetupAttachment(SpringArm);
+    Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+    Camera->bUsePawnControlRotation = false;
+    
+    /** Don't rotate when controller rotates */
+    bUseControllerRotationYaw = false;
+    bUseControllerRotationPitch = false;
+    bUseControllerRotationRoll = false;
 
 }
 
@@ -41,6 +50,18 @@ void AWolf::Tick(float DeltaTime)
 void AWolf::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+    
+    PlayerInputComponent->BindAxis("Turn", this, &AWolf::Turn);
+    PlayerInputComponent->BindAxis("LookUp", this, &AWolf::LookUp);
 
 }
 
+void AWolf::Turn(float Value)
+{
+    AddControllerYawInput(Value);
+}
+
+void AWolf::LookUp(float Value)
+{
+    AddControllerPitchInput(Value);
+}
