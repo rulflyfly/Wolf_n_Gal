@@ -15,11 +15,17 @@ public:
 	// Sets default values for this character's properties
 	AWolf();
     
-    class USkeletalMeshComponent* SkeletalMesh;
-    
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* Camera;
     
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
     class USpringArmComponent* SpringArm;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
+    float MaxHealth;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
+    float Health;
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,7 +38,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+    /** Movement */
     void Turn(float Value);
     void LookUp(float Value);
+    void MoveForward(float Value);
+    void MoveRight(float Value);
 	
+    /** Damage */
+    
+    void DecrementHealth(float Amount);
 };
