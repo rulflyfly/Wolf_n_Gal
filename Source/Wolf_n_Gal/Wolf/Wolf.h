@@ -26,6 +26,19 @@ public:
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
     float Health;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
+    int32 Coins;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+    class AHarmlessAI* AIToInteract;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UnderWater")
+    class AUnderwaterMask* MaskToPutOn;
+    
+    class AInfoVolume* OverlappingInfoVolume;
+    
+    bool MaskOn;
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,4 +60,22 @@ public:
     /** Damage */
     
     void DecrementHealth(float Amount);
+    void IncrementHealth(float Amount);
+    
+    /** Coins  */
+    
+    void AddCoins(int32 Amount);
+    
+    void Interact();
+    
+    void WearMask();
+    
+    void HideInfo();
+    
+    UFUNCTION()
+    void TransitionLevel();
+    
+    FORCEINLINE void SetAIToInteract(AHarmlessAI* AI) { AIToInteract = AI; }
+    FORCEINLINE void SetMaskToPutOn(AUnderwaterMask* Mask) { MaskToPutOn = Mask; }
+    FORCEINLINE void SetOverlappingInfoVolume(AInfoVolume* InfoVolume) { OverlappingInfoVolume = InfoVolume; }
 };

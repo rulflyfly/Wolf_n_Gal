@@ -7,6 +7,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "../HarmlessAI/HarmlessAI.h"
+#include "../GameplayMechanics/UnderwaterMask.h"
+#include "../GameplayMechanics/InfoVolume.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWolf::AWolf()
@@ -31,13 +35,16 @@ AWolf::AWolf()
     if (GetCharacterMovement())
     {
         GetCharacterMovement()->bOrientRotationToMovement = true;
-        GetCharacterMovement()->JumpZVelocity = 350.f;
-        GetCharacterMovement()->AirControl = 0.1f;
+        GetCharacterMovement()->JumpZVelocity = 450.f;
+        GetCharacterMovement()->AirControl = 0.3f;
     }
     
     MaxHealth = 100.f;
     Health = 90.f;
+    
+    Coins = 0;
 
+    MaskOn = false;
 }
 
 // Called when the game starts or when spawned
@@ -62,10 +69,14 @@ void AWolf::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
     PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
     
+    PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AWolf::Interact);
+    PlayerInputComponent->BindAction("WearMask", IE_Pressed, this, &AWolf::WearMask);
+    
     PlayerInputComponent->BindAxis("Turn", this, &AWolf::Turn);
     PlayerInputComponent->BindAxis("LookUp", this, &AWolf::LookUp);
     PlayerInputComponent->BindAxis("MoveForward", this, &AWolf::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &AWolf::MoveRight);
+
 }
 
 void AWolf::Turn(float Value)
@@ -102,5 +113,79 @@ void AWolf::MoveRight(float Value)
 
 void AWolf::DecrementHealth(float Amount)
 {
-    Health -= Amount;
+    if (Health > 0)
+    {
+        Health -= Amount;
+    }
+    else
+    {
+        Health = 0;
+    }
+}
+
+void AWolf::IncrementHealth(float Amount)
+{
+    if (Health < MaxHealth)
+    {
+        Health += Amount;
+    }
+    else
+    {
+        Health = MaxHealth;
+    }
+}
+
+void AWolf::AddCoins(int32 Amount)
+{
+    Coins += Amount;
+}
+
+void AWolf::Interact()
+{
+    if (AIToInteract)
+    {
+        HideInfo();
+        int32 Index = AIToInteract->DialogLineNum++;
+        
+        if (Index < AIToInteract->DialogLinesArray.Num())
+        {
+            AIToInteract->Interact(this, AIToInteract->DialogLinesArray[Index]);
+        }
+        else
+        {
+            AIToInteract->DialogLineNum = 0;
+            AIToInteract->StopInteracting(this);
+        }
+    }
+}
+
+void AWolf::WearMask()
+{
+    if (MaskToPutOn && !MaskOn)
+    {
+        HideInfo();
+        MaskToPutOn->PutOn(this);
+        MaskOn = true;
+    }
+    else if (MaskToPutOn && MaskOn)
+    {
+        MaskToPutOn->PutOff(this);
+        MaskOn = false;
+    }
+}
+
+
+void AWolf::HideInfo()
+{
+    if (OverlappingInfoVolume)
+    {
+        OverlappingInfoVolume->StopInteracting(this);
+        OverlappingInfoVolume->Destroy();
+        SetOverlappingInfoVolume(nullptr);
+    }
+}
+
+void AWolf::TransitionLevel()
+{
+    UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("Game")));
 }

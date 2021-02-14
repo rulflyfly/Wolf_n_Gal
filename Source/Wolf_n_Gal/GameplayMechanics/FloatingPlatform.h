@@ -18,6 +18,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Platform)
     class UStaticMeshComponent* Mesh;
     
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Platform)
+    class UBoxComponent* Box;
+    
     UPROPERTY(EditAnywhere)
     FVector StartPoint;
     
@@ -36,6 +39,12 @@ public:
     float Distance;
     
     FTimerHandle InterpTimer;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Platform)
+    bool bPressed;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Platform)
+    int32 ColorNum;
 
 protected:
 	// Called when the game starts or when spawned
@@ -48,5 +57,11 @@ public:
     void ToggleInterping();
     
     void SwapVectors(FVector& VectorOne, FVector& VectorTwo);
+    
+    UFUNCTION()
+    void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+    
+    UFUNCTION()
+    void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 };

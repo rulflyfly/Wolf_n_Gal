@@ -3,6 +3,8 @@
 
 #include "FloatingPlatform.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/BoxComponent.h"
+#include "../Wolf/Wolf.h"
 
 // Sets default values
 AFloatingPlatform::AFloatingPlatform()
@@ -13,6 +15,9 @@ AFloatingPlatform::AFloatingPlatform()
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     RootComponent = Mesh;
     
+    Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+    Box->SetupAttachment(GetRootComponent());
+    
     StartPoint = FVector(0.f);
     EndPoint = FVector(0.f);
     
@@ -20,6 +25,8 @@ AFloatingPlatform::AFloatingPlatform()
     InterpTime = 1.f;
     
     bInterping = true;
+    
+    ColorNum = 1;
 
 }
 
@@ -32,6 +39,12 @@ void AFloatingPlatform::BeginPlay()
     
     EndPoint += StartPoint;
     Distance = (EndPoint - StartPoint).Size();
+    
+    Box->OnComponentBeginOverlap.AddDynamic(this, &AFloatingPlatform::OnOverlapBegin);
+    Box->OnComponentEndOverlap.AddDynamic(this, &AFloatingPlatform::OnOverlapEnd);
+    
+    Box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+    Box->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	
 }
 
@@ -67,4 +80,32 @@ void AFloatingPlatform::SwapVectors(FVector& VectorOne, FVector& VectorTwo)
     FVector Temp = VectorOne;
     VectorOne = VectorTwo;
     VectorTwo = Temp;
+}
+
+
+void AFloatingPlatform::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{
+    if (OtherActor)
+    {
+        AWolf* Wolf = Cast<AWolf>(OtherActor);
+        
+        if (Wolf)
+        {
+            ColorNum = FMath::RandRange(1, 3);
+            bPressed = true;
+        }
+    }
+}
+
+void AFloatingPlatform::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+    if (OtherActor)
+    {
+        AWolf* LeavingWolf = Cast<AWolf>(OtherActor);
+        
+        if (LeavingWolf)
+        {
+            bPressed = false;
+        }
+    }
 }
