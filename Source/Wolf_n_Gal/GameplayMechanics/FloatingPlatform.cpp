@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "../Wolf/Wolf.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AFloatingPlatform::AFloatingPlatform()
@@ -45,13 +46,26 @@ void AFloatingPlatform::BeginPlay()
     
     Box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
     Box->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+    
+    Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	
+    
+    APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    
+    AWolf* WolfToSet = Cast<AWolf>(PlayerPawn);
+    
+    if (WolfToSet)
+    {
+        Player = WolfToSet;
+    }
 }
 
 // Called every frame
 void AFloatingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+    
+    if (Player->bGoingToPortal) Destroy();
 
     if (bInterping)
     {

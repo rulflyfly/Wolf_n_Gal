@@ -7,6 +7,7 @@
 #include "../Wolf/Wolf.h"
 #include "../PlayerController/MainPlayerController.h"
 #include "Components/BoxComponent.h"
+#include "SpawnVolume.h"
 
 // Sets default values
 AInfoVolume::AInfoVolume()
@@ -18,6 +19,10 @@ AInfoVolume::AInfoVolume()
     OverlappingBox->SetupAttachment(GetRootComponent());
     
     DialogLine = "I am an info volume";
+    
+    bWater = false;
+    
+    bShark = false;
 }
 
 void AInfoVolume::BeginPlay()
@@ -40,9 +45,15 @@ void AInfoVolume::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
         
         if (Wolf)
         {
+            if (bWater && Wolf->bMaskOn)
+            {
+                Destroy();
+                return;
+            }
+            
             Wolf->SetOverlappingInfoVolume(this);
             Interact(Wolf, DialogLine);
-            
+
         }
     }
 }
@@ -53,6 +64,12 @@ void AInfoVolume::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor*
     {
         AWolf* Wolf = Cast<AWolf>(OtherActor);
         
+        if (Wolf && bShark)
+        {
+            Wolf->SpawnVolume->SpawnCoinsAfterFirstEncounter();
+            Destroy();
+        }
+            
         if (Wolf && InfoPlayerController)
         {
             Wolf->SetOverlappingInfoVolume(nullptr);

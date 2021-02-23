@@ -16,6 +16,11 @@ public:
 	// Sets default values for this character's properties
 	AHarmlessAI();
     
+    class AWolf* Player;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interaction)
+    bool bHasMoreToSay;
+    
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Interaction)
     class UBoxComponent* InteractionBox;
     

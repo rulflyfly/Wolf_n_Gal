@@ -40,7 +40,7 @@ class IDialogInterface
 public:
     
     class AMainPlayerController* InfoPlayerController;
-    
+
     virtual void Interact(class AWolf* Wolf, const FString& Text);
     virtual void StopInteracting(AWolf* Wolf);
 };

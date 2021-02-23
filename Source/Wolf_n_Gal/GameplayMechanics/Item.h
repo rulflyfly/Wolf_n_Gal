@@ -15,6 +15,9 @@ public:
 	// Sets default values for this actor's properties
 	AItem();
     
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Sound)
+    class USoundCue* GetSound;
+    
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Colission)
     class UBoxComponent* CollisionBox;
     

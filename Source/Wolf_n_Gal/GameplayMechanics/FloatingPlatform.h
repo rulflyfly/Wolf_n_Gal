@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	AFloatingPlatform();
     
+    class AWolf* Player;
+    
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Platform)
     class UStaticMeshComponent* Mesh;
     

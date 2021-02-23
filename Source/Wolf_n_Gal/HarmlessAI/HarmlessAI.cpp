@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/BoxComponent.h"
 #include "../Wolf/Wolf.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AHarmlessAI::AHarmlessAI()
@@ -26,6 +27,8 @@ AHarmlessAI::AHarmlessAI()
     {
         GetCharacterMovement()->bOrientRotationToMovement = true;
     }
+    
+    bHasMoreToSay = false;
 }
 
 // Called when the game starts or when spawned
@@ -54,6 +57,15 @@ void AHarmlessAI::BeginPlay()
             }
         }
     }
+    
+    APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    
+    AWolf* WolfToSet = Cast<AWolf>(PlayerPawn);
+    
+    if (WolfToSet)
+    {
+        Player = WolfToSet;
+    }
 }
 
 // Called every frame
@@ -61,6 +73,7 @@ void AHarmlessAI::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    if (Player->bGoingToPortal) Destroy();
 }
 
 // Called to bind functionality to input
@@ -110,6 +123,8 @@ void AHarmlessAI::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor*
         if (Wolf)
         {
             Wolf->SetAIToInteract(nullptr);
+            DialogLineNum = 0;
+            StopInteracting(Wolf);
         }
     }
 }

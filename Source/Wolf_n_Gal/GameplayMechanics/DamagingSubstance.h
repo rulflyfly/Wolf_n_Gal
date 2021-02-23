@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../Interface/DialogInterface.h"
 #include "DamagingSubstance.generated.h"
 
 UCLASS()
-class WOLF_N_GAL_API ADamagingSubstance : public AActor
+class WOLF_N_GAL_API ADamagingSubstance : public AActor, public IDialogInterface
 {
 	GENERATED_BODY()
 	
@@ -17,6 +18,9 @@ public:
     
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Collision)
     class UBoxComponent* DamageVolume;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dialog)
+    FString Message;
     
     bool bDamaging;
     

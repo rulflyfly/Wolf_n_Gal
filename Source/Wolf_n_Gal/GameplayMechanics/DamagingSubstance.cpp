@@ -4,6 +4,8 @@
 #include "DamagingSubstance.h"
 #include "Components/BoxComponent.h"
 #include "../Wolf/Wolf.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 ADamagingSubstance::ADamagingSubstance()
@@ -35,7 +37,7 @@ void ADamagingSubstance::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
     
-    if (Wolf && bDamaging)
+    if (Wolf && bDamaging && !Wolf->bIsDead && !Wolf->bMaskOn)
     {
         Wolf->DecrementHealth(DamagePerSec*DeltaTime);
     }
@@ -48,9 +50,16 @@ void ADamagingSubstance::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent
     {
         Wolf = Cast<AWolf>(OtherActor);
         
-        if (Wolf)
+        if (Wolf && Wolf->InWaterSound)
+        {
+            Wolf->bInWater = true;
+            UGameplayStatics::PlaySound2D(this, Wolf->InWaterSound);
+        }
+        
+        if (Wolf && !Wolf->bGoingToPortal)
         {
             bDamaging = true;
+            if (Message != TEXT("")) Interact(Wolf, Message);
         }
     }
 }
@@ -61,10 +70,17 @@ void ADamagingSubstance::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
     {
         AWolf* LeavingWolf = Cast<AWolf>(OtherActor);
         
+        if (LeavingWolf && LeavingWolf->InWaterSound)
+        {
+            Wolf->bInWater = false;
+            UGameplayStatics::PlaySound2D(this, LeavingWolf->OutWaterSound);
+        }
+        
         if (LeavingWolf)
         {
             Wolf = nullptr;
             bDamaging = false;
+            if (Message != TEXT("")) StopInteracting(Wolf);
         }
     }
 }

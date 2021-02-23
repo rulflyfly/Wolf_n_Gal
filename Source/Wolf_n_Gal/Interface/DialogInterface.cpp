@@ -7,7 +7,6 @@
 #include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h"
 
-
 void IDialogInterface::Interact(AWolf* Wolf, const FString& Text)
 {
     InfoPlayerController = Cast<AMainPlayerController>(Wolf->GetController());

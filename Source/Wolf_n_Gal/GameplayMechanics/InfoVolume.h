@@ -20,6 +20,12 @@ public:
 	// Sets default values for this actor's properties
 	AInfoVolume();
     
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = InfoType)
+    bool bWater;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = InfoType)
+    bool bShark;
+    
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dialog);
     FString DialogLine;
     

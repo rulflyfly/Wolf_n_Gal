@@ -18,5 +18,10 @@
 			"Name": "Water",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"MacNoEditor",
+		"WindowsNoEditor",
+		"WindowsNoEditorWin32"
 	]
 }
